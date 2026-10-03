@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#164b37">
+  <title>GranaLeve — Seu dinheiro organizado</title>
+  <style>
+    :root {
+      --verde-950:#0f3125;
+      --verde-900:#123d2c;
+      --verde-800:#164b37;
+      --verde-700:#1f6548;
+      --verde-600:#2f7d59;
+      --verde-500:#2f9e62;
+      --verde-100:#e2f2e9;
+      --verde-050:#f3f8f5;
+      --texto:#15392b;
+      --texto-2:#617268;
+      --borda:#d7e3dc;
+      --branco:#fff;
+      --vermelho:#9b2c2c;
+      --vermelho-bg:#fde9e9;
+      --laranja:#bf6a1c;
+      --amarelo-bg:#fff6df;
+      --sombra:0 12px 34px rgba(20,60,45,.08);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;background:#f3f6f4;color:var(--texto);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      line-height:1.45;
+    }
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    .container{width:min(100% - 40px,1120px);margin:0 auto}
+    header{
+      background:linear-gradient(135deg,var(--verde-950),var(--verde-700));color:#fff;
+      padding:30px 0 58px;border-radius:0 0 30px 30px;
+      box-shadow:0 10px 30px rgba(18,61,44,.18)
+    }
+    .brand-row{display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .brand h1{margin:0;font-size:clamp(30px,4vw,40px);letter-spacing:-1.5px;line-height:1}
+    .brand p{margin:12px 0 0;color:#d8eee3;font-size:16px}
+    .brand-badge{
+      padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.18);color:#effaf4;font-size:13px;white-space:nowrap
+    }
+    main{padding-bottom:44px;margin-top:-24px;position:relative}
+    .aviso{
+      display:inline-flex;align-items:center;gap:8px;background:#fff;padding:8px 12px;border-radius:999px;
+      font-size:13px;font-weight:800;box-shadow:0 4px 16px rgba(20,60,45,.09);border:1px solid #edf2ef
+    }
+    .intro{margin:28px 0 18px;display:flex;align-items:end;justify-content:space-between;gap:18px}
+    .intro h2{margin:0 0 8px;font-size:28px;letter-spacing:-.6px}
+    .intro p{margin:0;color:var(--texto-2)}
+    .month-control{display:flex;align-items:end;gap:10px;flex-wrap:wrap}
+    .month-control label{margin:0}
+    .month-control input{width:180px}
+    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:24px}
+    .card{
+      min-height:126px;background:#fff;padding:24px 26px 22px 28px;border:1px solid var(--borda);
+      border-radius:20px;position:relative;overflow:hidden;box-shadow:0 4px 14px rgba(20,60,45,.04);
+      transition:transform .18s ease,box-shadow .18s ease
+    }
+    .card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(20,60,45,.09)}
+    .card::before{content:"";position:absolute;left:0;top:0;width:5px;height:100%;background:var(--verde-800)}
+    .card:nth-child(2)::before{background:var(--verde-500)}
+    .card:nth-child(3)::before{background:#df8b34}
+    .card:nth-child(4)::before{background:#6c63c7}
+    .card-icon{
+      position:absolute;right:18px;top:18px;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+      background:rgba(22,62,46,.07);font-size:20px;font-weight:900
+    }
+    .card p{margin:0 50px 12px 0;color:#5d6f66;font-size:14px;font-weight:700}
+    .card strong{display:block;font-size:27px;letter-spacing:-.7px;line-height:1.12}
+    .card.saldo-positivo{background:#e6f6ed;border-color:#b7dfc7}
+    .card.saldo-negativo{background:var(--vermelho-bg);border-color:#efb8b8;color:#8a2525}
+    .card.saldo-negativo .card-icon{background:rgba(170,40,40,.08)}
+    .card.saldo-zero{background:#fff;border-color:var(--borda)}
+    .panel{
+      background:#fff;border:1px solid var(--borda);border-radius:20px;padding:24px;margin-top:24px;box-shadow:var(--sombra)
+    }
+    .panel-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+    .panel h3{margin:0;font-size:21px;letter-spacing:-.3px}
+    .panel-subtitle{margin:3px 0 0;color:var(--texto-2);font-size:14px}
+    .total-pill{
+      display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border-radius:999px;background:var(--verde-050);
+      color:var(--verde-800);border:1px solid #dceae2;font-size:13px;font-weight:800;white-space:nowrap
+    }
+    label{display:inline-block;font-size:14px;font-weight:800;margin-bottom:7px}
+    input,select{
+      width:100%;padding:13px 14px;border:1px solid #cbd9d0;border-radius:11px;background:#fff;color:#18382c;
+      transition:border-color .15s ease,box-shadow .15s ease
+    }
+    input:focus,select:focus{outline:none;border-color:var(--verde-600);box-shadow:0 0 0 3px rgba(47,125,89,.12)}
+    .form-grid{display:grid;grid-template-columns:1.8fr .9fr 1.3fr;gap:16px;align-items:end}
+    .form-grid-movimento{grid-template-columns:1.55fr .78fr 1.02fr 1.02fr 1fr}
+    .form-grid-conta{grid-template-columns:1.55fr .8fr 1.05fr 1.05fr}
+    .form-actions{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+    .btn{
+      border:0;border-radius:11px;padding:12px 18px;font-weight:800;
+      transition:transform .15s ease,opacity .15s ease,box-shadow .15s ease
+    }
+    .btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 7px 18px rgba(22,62,46,.12)}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    .btn-primary{background:var(--verde-800);color:#fff}
+    .btn-secondary{background:#eef5f1;color:var(--verde-800);border:1px solid #d9e6df}
+    .btn-danger{background:#fff;color:var(--vermelho);border:1px solid #efcece}
+    .btn-ghost{background:#fff;color:var(--verde-800);border:1px solid var(--borda)}
+    .helper{margin:12px 0 0;color:var(--texto-2);font-size:14px;line-height:1.55}
+    .list{display:grid;gap:10px;margin-top:18px}
+    .empty{margin:0;padding:16px;border-radius:13px;background:#f7faf8;border:1px dashed #d5e2da;color:var(--texto-2);text-align:center}
+    .row-item{
+      display:grid;grid-template-columns:minmax(0,1.5fr) minmax(120px,.8fr) auto;gap:16px;align-items:center;
+      padding:14px 15px;border:1px solid #e0e9e4;border-radius:14px;background:#fbfdfc
+    }
+    .row-main{min-width:0}
+    .row-title{margin:0 0 4px;font-weight:850;overflow-wrap:anywhere}
+    .row-meta{margin:0;color:var(--texto-2);font-size:13px}
+    .row-value{font-size:16px;font-weight:900;text-align:right;white-space:nowrap}
+    .entrada{color:#237b4c}.gasto{color:#a43a32}
+    .row-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+    .row-actions .btn{padding:9px 11px;font-size:13px;box-shadow:none}
+    .status,.categoria-tag{
+      display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:850;margin-left:6px
+    }
+    .status-ok{background:#e4f4eb;color:#23734b}.status-hoje{background:#fff2dd;color:#a25f16}.status-vencida{background:#fde7e7;color:#992b2b}
+    .categoria-tag{background:#eef5f1;color:var(--verde-800);border:1px solid #dce8e1}
+    .analysis-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr);gap:18px}
+    .chart-box,.insight-box{border:1px solid #e0e9e4;border-radius:16px;background:#fbfdfc;padding:18px}
+    .chart-title{margin:0 0 16px;font-size:16px}
+    .bar-list{display:grid;gap:12px}
+    .bar-row{display:grid;grid-template-columns:130px 1fr auto;gap:10px;align-items:center}
+    .bar-label{font-size:13px;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .bar-track{height:10px;background:#e9f0ec;border-radius:999px;overflow:hidden}
+    .bar-fill{height:100%;background:linear-gradient(90deg,var(--verde-500),var(--verde-700));border-radius:999px}
+    .bar-value{font-size:13px;font-weight:850;white-space:nowrap}
+    .metric{padding:14px 0;border-bottom:1px solid #e8efeb}
+    .metric:first-child{padding-top:0}.metric:last-child{border-bottom:0;padding-bottom:0}
+    .metric-label{display:block;color:var(--texto-2);font-size:13px;margin-bottom:4px}
+    .metric strong{font-size:20px;letter-spacing:-.4px}
+    .filters{display:grid;grid-template-columns:1.5fr .8fr 1fr .9fr;gap:10px;margin-top:14px}
+    .filters label{font-size:12px;margin-bottom:5px}
+    .backup-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch}
+    .backup-card{padding:16px;border:1px solid #e0e9e4;border-radius:14px;background:#fbfdfc}
+    .backup-card h4{margin:0 0 6px;font-size:16px}.backup-card p{margin:0 0 13px;color:var(--texto-2);font-size:13px;line-height:1.5}
+    dialog{border:0;border-radius:18px;padding:0;max-width:560px;width:calc(100% - 28px);box-shadow:0 24px 80px rgba(0,0,0,.24)}
+    dialog::backdrop{background:rgba(15,49,37,.45);backdrop-filter:blur(2px)}
+    .modal{padding:22px}.modal h3{margin:0 0 4px}.modal p{margin:0 0 18px;color:var(--texto-2);font-size:14px}
+    .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.modal-grid .full{grid-column:1/-1}
+    .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;flex-wrap:wrap}
+    footer{padding:28px 0 8px;color:var(--texto-2);font-size:13px;text-align:center}
+    @media (max-width:980px){.cards{grid-template-columns:repeat(2,1fr)}.analysis-grid{grid-template-columns:1fr}.form-grid-movimento,.form-grid-conta{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr 1fr}.backup-grid{grid-template-columns:1fr 1fr}}
+    @media (max-width:720px){
+      .container{width:min(100% - 24px,1120px)}header{padding:24px 0 48px;border-radius:0 0 24px 24px}.brand-row{align-items:flex-start}.brand-badge{display:none}.brand p{font-size:14px}
+      .intro{align-items:flex-start;flex-direction:column}.month-control{width:100%}.month-control>div{flex:1}.month-control input{width:100%}
+      .cards{grid-template-columns:1fr}.panel{padding:18px;border-radius:17px}.panel-header{align-items:flex-start;flex-direction:column}
+      .form-grid,.form-grid-movimento,.form-grid-conta,.filters,.backup-grid,.modal-grid{grid-template-columns:1fr}
+      .row-item{grid-template-columns:1fr;gap:10px}.row-value{text-align:left}.row-actions{justify-content:flex-start}.form-actions{align-items:stretch}.form-actions .btn{width:100%}
+      .bar-row{grid-template-columns:95px 1fr}.bar-value{grid-column:2;text-align:right;margin-top:-7px}.modal-grid .full{grid-column:auto}
+    }
+  
+    [hidden]{display:none!important}
+    .auth-shell{width:min(100% - 40px,520px);margin:34px auto 60px}
+    .auth-card{background:#fff;border:1px solid var(--borda);border-radius:22px;padding:28px;box-shadow:var(--sombra)}
+    .auth-card h2{margin:0 0 7px;font-size:27px}
+    .auth-card .auth-sub{margin:0 0 22px;color:var(--texto-2)}
+    .auth-tabs{display:grid;grid-template-columns:1fr 1fr;background:#eef5f1;border-radius:12px;padding:4px;margin-bottom:20px}
+    .auth-tab{border:0;background:transparent;padding:10px;border-radius:9px;font-weight:800;color:var(--texto-2)}
+    .auth-tab.active{background:#fff;color:var(--verde-800);box-shadow:0 3px 12px rgba(20,60,45,.08)}
+    .auth-fields{display:grid;gap:14px}
+    .auth-actions{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap}
+    .auth-message{min-height:22px;margin:14px 0 0;color:var(--texto-2);font-size:14px;line-height:1.5}
+    .auth-message.error{color:var(--vermelho)}
+    .auth-message.ok{color:#23734b}
+    .cloud-user{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .cloud-email{font-size:13px;color:#effaf4;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .cloud-logout{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.10);color:white;padding:8px 12px;border-radius:10px;font-weight:800}
+    .sync-pill{display:inline-flex;align-items:center;gap:7px;background:#e8f6ee;color:#23734b;border:1px solid #cde7d7;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:800}
+    .sync-pill.syncing{background:#fff6df;color:#966014;border-color:#f0ddb0}
+    .sync-pill.error{background:#fde9e9;color:#992b2b;border-color:#efc3c3}
+    .cloud-import{margin-top:14px;padding:14px;border:1px dashed #cfe0d6;border-radius:13px;background:#f7faf8}
+    .cloud-import strong{display:block;margin-bottom:4px}
+    .cloud-import p{margin:0 0 10px;color:var(--texto-2);font-size:13px}
+    @media(max-width:600px){.auth-shell{width:min(100% - 24px,520px);margin-top:24px}.auth-card{padding:20px}.cloud-user{justify-content:flex-start}.cloud-email{max-width:180px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container brand-row">
+      <div class="brand">
+        <h1>GranaLeve 🌿</h1>
+        <p>Seu dinheiro organizado. Sua cabeça mais leve.</p>
+      </div>
+      <div class="brand-badge" id="guest-badge">Controle simples • sem complicação</div>
+      <div class="cloud-user" id="cloud-user" hidden>
+        <span class="cloud-email" id="cloud-email"></span>
+        <button class="cloud-logout" id="btn-sair" type="button">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="auth-shell" id="auth-shell">
+    <div class="auth-card">
+      <h2>Entre no GranaLeve</h2>
+      <p class="auth-sub">Seus dados ficam protegidos na nuvem e disponíveis em qualquer dispositivo.</p>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" type="button">Entrar</button>
+        <button class="auth-tab" id="tab-cadastro" type="button">Criar conta</button>
+      </div>
+      <form id="form-auth">
+        <div class="auth-fields">
+          <div><label for="auth-email">E-mail</label><input id="auth-email" type="email" autocomplete="email" placeholder="voce@email.com" required></div>
+          <div><label for="auth-senha">Senha</label><input id="auth-senha" type="password" autocomplete="current-password" minlength="6" placeholder="Mínimo de 6 caracteres" required></div>
+        </div>
+        <div class="auth-actions">
+          <button class="btn btn-primary" id="auth-submit" type="submit">Entrar</button>
+        </div>
+        <p class="auth-message" id="auth-message" role="status"></p>
+      </form>
+    </div>
+  </section>
+
+  <main class="container" id="app-main" hidden>
+    <span class="aviso">☁️ Versão nuvem • Dados protegidos por usuário</span>
+    <span class="sync-pill" id="sync-status" style="margin-left:8px">● Nuvem conectada</span>
+
+    <section class="intro">
+      <div>
+        <h2>Seu resumo financeiro</h2>
+        <p>Acompanhe o que entrou, o que saiu e o que ainda precisa ser pago.</p>
+      </div>
+      <div class="month-control">
+        <div>
+          <label for="mes-analise">Mês analisado</label>
+          <input id="mes-analise" type="month">
+        </div>
+        <button class="btn btn-ghost" id="mes-atual" type="button">Mês atual</button>
+      </div>
+    </section>
+
+    <section class="cards" aria-label="Resumo financeiro">
+      <article class="card saldo saldo-zero">
+        <span class="card-icon" aria-hidden="true">💰</span>
+        <p>Saldo registrado</p>
+        <strong id="total-saldo">R$ 0,00</strong>
+      </article>
+      <article class="card">
+        <span class="card-icon entrada" aria-hidden="true">↗</span>
+        <p>Entradas do mês</p>
+        <strong id="total-entradas">R$ 0,00</strong>
+      </article>
+      <article class="card">
+        <span class="card-icon" style="color:#bf6a1c" aria-hidden="true">↘</span>
+        <p>Gastos do mês</p>
+        <strong id="total-gastos">R$ 0,00</strong>
+      </article>
+      <article class="card">
+        <span class="card-icon" style="color:#6c63c7" aria-hidden="true">◎</span>
+        <p>Saldo após contas pendentes</p>
+        <strong id="saldo-previsto">R$ 0,00</strong>
+      </article>
+    </section>
+
+    <section class="panel" aria-labelledby="titulo-analise">
+      <div class="panel-header">
+        <div>
+          <h3 id="titulo-analise">Onde seu dinheiro está indo?</h3>
+          <p class="panel-subtitle">Análise automática dos gastos do mês selecionado.</p>
+        </div>
+        <span class="total-pill" id="resultado-mes-pill">Resultado do mês: R$ 0,00</span>
+      </div>
+      <div class="analysis-grid">
+        <div class="chart-box">
+          <h4 class="chart-title">Gastos por categoria</h4>
+          <div id="grafico-categorias" class="bar-list"></div>
+        </div>
+        <div class="insight-box">
+          <div class="metric"><span class="metric-label">Maior categoria de gasto</span><strong id="maior-categoria">—</strong></div>
+          <div class="metric"><span class="metric-label">Quantidade de lançamentos no mês</span><strong id="qtd-movimentos-mes">0</strong></div>
+          <div class="metric"><span class="metric-label">Média diária de gastos</span><strong id="media-gastos">R$ 0,00</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="titulo-contas">
+      <div class="panel-header">
+        <div>
+          <h3 id="titulo-contas">Contas a vencer</h3>
+          <p class="panel-subtitle">Cadastre contas pendentes e marque como paga quando quitar.</p>
+        </div>
+        <span class="total-pill" id="total-pendente">Total pendente: R$ 0,00</span>
+      </div>
+      <form id="form-conta">
+        <div class="form-grid form-grid-conta">
+          <div><label for="conta-descricao">Nome da conta</label><input id="conta-descricao" type="text" placeholder="Ex.: luz, internet ou aluguel" maxlength="80" required></div>
+          <div><label for="conta-valor">Valor em reais</label><input id="conta-valor" type="number" placeholder="Ex.: 120,00" min="0.01" max="999999999" step="0.01" required></div>
+          <div><label for="conta-categoria">Categoria</label><select id="conta-categoria"></select></div>
+          <div><label for="conta-vencimento">Vencimento</label><input id="conta-vencimento" type="date" required></div>
+        </div>
+        <div class="form-actions"><button class="btn btn-primary" id="salvar-conta" type="submit">Adicionar conta</button></div>
+        <p id="aviso-conta" class="helper" role="status">Contas pendentes não alteram o saldo até serem marcadas como pagas.</p>
+      </form>
+      <div id="lista-contas" class="list"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="titulo-movimento">
+      <div class="panel-header">
+        <div>
+          <h3 id="titulo-movimento">Adicionar movimentação</h3>
+          <p class="panel-subtitle">Registre entradas e gastos com categoria e data.</p>
+        </div>
+      </div>
+      <form id="form-movimento">
+        <div class="form-grid form-grid-movimento">
+          <div><label for="descricao">Descrição</label><input id="descricao" type="text" placeholder="Ex.: salário ou supermercado" maxlength="80" required></div>
+          <div><label for="valor">Valor em reais</label><input id="valor" type="number" placeholder="Ex.: 50,00" min="0.01" max="999999999" step="0.01" required></div>
+          <div><label for="tipo">Tipo</label><select id="tipo"><option value="entrada">Entrada — recebi dinheiro</option><option value="gasto">Gasto — paguei algo</option></select></div>
+          <div><label for="categoria">Categoria</label><select id="categoria"></select></div>
+          <div><label for="data-movimento">Data</label><input id="data-movimento" type="date" required></div>
+        </div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit" id="salvar-movimento">Salvar movimentação</button></div>
+        <p id="aviso-movimento" class="helper" role="status">Os lançamentos entram imediatamente no resumo e no histórico.</p>
+      </form>
+    </section>
+
+    <section class="panel" aria-labelledby="titulo-historico">
+      <div class="panel-header">
+        <div>
+          <h3 id="titulo-historico">Movimentações</h3>
+          <p class="panel-subtitle">Pesquise, filtre, edite ou exclua seus lançamentos.</p>
+        </div>
+      </div>
+      <div class="filters">
+        <div><label for="filtro-texto">Buscar</label><input id="filtro-texto" type="search" placeholder="Ex.: mercado"></div>
+        <div><label for="filtro-tipo">Tipo</label><select id="filtro-tipo"><option value="todos">Todos</option><option value="entrada">Entradas</option><option value="gasto">Gastos</option></select></div>
+        <div><label for="filtro-categoria">Categoria</label><select id="filtro-categoria"><option value="todas">Todas</option></select></div>
+        <div><label for="filtro-mes">Mês</label><input id="filtro-mes" type="month"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-ghost" id="limpar-filtros" type="button">Limpar filtros</button>
+        <span class="helper" id="contagem-filtro" style="margin:0"></span>
+      </div>
+      <div id="lista-movimentos" class="list"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="titulo-backup">
+      <div class="panel-header">
+        <div>
+          <h3 id="titulo-backup">Seus dados</h3>
+          <p class="panel-subtitle">Backup, restauração e exportação para planilha.</p>
+        </div>
+      </div>
+      <div class="backup-grid">
+        <div class="backup-card"><h4>Baixar backup</h4><p>Salva tudo em JSON para restaurar depois.</p><button class="btn btn-secondary" type="button" id="baixar-backup">Baixar cópia</button></div>
+        <div class="backup-card"><h4>Restaurar backup</h4><p>Escolha uma cópia anterior. Os dados atuais serão substituídos.</p><input type="file" id="arquivo-backup" accept=".json,application/json"><button class="btn btn-secondary" type="button" id="restaurar-backup" style="margin-top:10px">Restaurar cópia</button></div>
+        <div class="backup-card"><h4>Exportar CSV</h4><p>Baixe as movimentações em formato compatível com Excel e Google Sheets.</p><button class="btn btn-secondary" type="button" id="exportar-csv">Exportar planilha</button></div>
+        <div class="backup-card" id="import-local-card" hidden><h4>Migrar dados antigos</h4><p>Leva os dados que estavam salvos neste navegador para sua conta na nuvem.</p><button class="btn btn-secondary" type="button" id="importar-local">Importar dados deste navegador</button></div>
+      </div>
+      <p id="aviso-backup" class="helper" role="status"></p>
+    </section>
+
+    <footer>GranaLeve • Dados sincronizados com segurança na nuvem.</footer>
+  </main>
+
+  <dialog id="modal-movimento">
+    <form class="modal" id="form-editar-movimento" method="dialog">
+      <h3>Editar movimentação</h3><p>Altere os dados e salve.</p>
+      <div class="modal-grid">
+        <div class="full"><label for="edit-mov-descricao">Descrição</label><input id="edit-mov-descricao" type="text" maxlength="80" required></div>
+        <div><label for="edit-mov-valor">Valor</label><input id="edit-mov-valor" type="number" min="0.01" max="999999999" step="0.01" required></div>
+        <div><label for="edit-mov-tipo">Tipo</label><select id="edit-mov-tipo"><option value="entrada">Entrada</option><option value="gasto">Gasto</option></select></div>
+        <div><label for="edit-mov-categoria">Categoria</label><select id="edit-mov-categoria"></select></div>
+        <div><label for="edit-mov-data">Data</label><input id="edit-mov-data" type="date" required></div>
+      </div>
+      <div class="modal-actions"><button class="btn btn-ghost" type="button" data-fechar="modal-movimento">Cancelar</button><button class="btn btn-primary" type="submit">Salvar alterações</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="modal-conta">
+    <form class="modal" id="form-editar-conta" method="dialog">
+      <h3>Editar conta</h3><p>Atualize a conta pendente.</p>
+      <div class="modal-grid">
+        <div class="full"><label for="edit-conta-nome">Nome da conta</label><input id="edit-conta-nome" type="text" maxlength="80" required></div>
+        <div><label for="edit-conta-valor">Valor</label><input id="edit-conta-valor" type="number" min="0.01" max="999999999" step="0.01" required></div>
+        <div><label for="edit-conta-categoria">Categoria</label><select id="edit-conta-categoria"></select></div>
+        <div class="full"><label for="edit-conta-vencimento">Vencimento</label><input id="edit-conta-vencimento" type="date" required></div>
+      </div>
+      <div class="modal-actions"><button class="btn btn-ghost" type="button" data-fechar="modal-conta">Cancelar</button><button class="btn btn-primary" type="submit">Salvar alterações</button></div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  (()=>{
+    "use strict";
+    const SUPABASE_URL="https://szbsnjfurtxzkvemaytp.supabase.co";
+    const SUPABASE_KEY="sb_publishable_JYkvDCinFk1L3Yzb9Pm0BQ_VRegPkBJ";
+    const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    const LOCAL_KEY="granaleve-dados-v2",LEGACY_MOVIMENTOS="granaleve-movimentos-v1",LEGACY_CONTAS="granaleve-contas-v1",MAX_CENTAVOS=99999999900;
+    const CATEGORIAS=["Alimentação","Casa","Transporte","Lazer","Saúde","Trabalho","Educação","Assinaturas","Dívidas","Salário","Outros"];
+    const CATEGORIAS_GASTO=CATEGORIAS.filter(c=>c!=="Salário");
+    const $=id=>document.getElementById(id);
+    const els={
+      authShell:$("auth-shell"),appMain:$("app-main"),formAuth:$("form-auth"),authEmail:$("auth-email"),authSenha:$("auth-senha"),authSubmit:$("auth-submit"),authMessage:$("auth-message"),tabLogin:$("tab-login"),tabCadastro:$("tab-cadastro"),cloudUser:$("cloud-user"),cloudEmail:$("cloud-email"),guestBadge:$("guest-badge"),btnSair:$("btn-sair"),syncStatus:$("sync-status"),importLocalCard:$("import-local-card"),importarLocal:$("importar-local"),
+      saldo:$("total-saldo"),entradas:$("total-entradas"),gastos:$("total-gastos"),saldoPrevisto:$("saldo-previsto"),cardSaldo:document.querySelector(".card.saldo"),
+      totalPendente:$("total-pendente"),mesAnalise:$("mes-analise"),mesAtual:$("mes-atual"),resultadoMesPill:$("resultado-mes-pill"),graficoCategorias:$("grafico-categorias"),maiorCategoria:$("maior-categoria"),qtdMes:$("qtd-movimentos-mes"),mediaGastos:$("media-gastos"),
+      formMovimento:$("form-movimento"),descricao:$("descricao"),valor:$("valor"),tipo:$("tipo"),categoria:$("categoria"),dataMovimento:$("data-movimento"),avisoMovimento:$("aviso-movimento"),listaMovimentos:$("lista-movimentos"),
+      formConta:$("form-conta"),contaDescricao:$("conta-descricao"),contaValor:$("conta-valor"),contaCategoria:$("conta-categoria"),contaVencimento:$("conta-vencimento"),avisoConta:$("aviso-conta"),listaContas:$("lista-contas"),
+      filtroTexto:$("filtro-texto"),filtroTipo:$("filtro-tipo"),filtroCategoria:$("filtro-categoria"),filtroMes:$("filtro-mes"),limparFiltros:$("limpar-filtros"),contagemFiltro:$("contagem-filtro"),
+      baixarBackup:$("baixar-backup"),restaurarBackup:$("restaurar-backup"),arquivoBackup:$("arquivo-backup"),exportarCsv:$("exportar-csv"),avisoBackup:$("aviso-backup"),
+      modalMov:$("modal-movimento"),formEditMov:$("form-editar-movimento"),editMovDescricao:$("edit-mov-descricao"),editMovValor:$("edit-mov-valor"),editMovTipo:$("edit-mov-tipo"),editMovCategoria:$("edit-mov-categoria"),editMovData:$("edit-mov-data"),
+      modalConta:$("modal-conta"),formEditConta:$("form-editar-conta"),editContaNome:$("edit-conta-nome"),editContaValor:$("edit-conta-valor"),editContaCategoria:$("edit-conta-categoria"),editContaVencimento:$("edit-conta-vencimento")
+    };
+    let authMode="login",session=null,estado={movimentos:[],contas:[]},editMovId=null,editContaId=null;
+    const moeda=c=>(c/100).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+    const hoje=()=>{const d=new Date();return[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")};
+    const mesAtual=()=>hoje().slice(0,7);
+    const dataValida=v=>typeof v==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(v);
+    const textoValido=v=>typeof v==="string"&&v.trim().length>0&&v.length<=200;
+    const centavosValidos=v=>Number.isSafeInteger(v)&&v>0&&v<=MAX_CENTAVOS;
+    const uuid=()=>crypto.randomUUID();
+    function setSync(texto,tipo="ok"){els.syncStatus.textContent=texto;els.syncStatus.className="sync-pill"+(tipo==="syncing"?" syncing":tipo==="error"?" error":"")}
+    function setAuthMessage(texto,tipo=""){els.authMessage.textContent=texto;els.authMessage.className="auth-message"+(tipo?" "+tipo:"")}
+    function popularSelect(select,categorias,primeiro){select.replaceChildren();if(primeiro){const o=document.createElement("option");o.value=primeiro.valor;o.textContent=primeiro.texto;select.append(o)}categorias.forEach(c=>{const o=document.createElement("option");o.value=c;o.textContent=c;select.append(o)})}
+    popularSelect(els.categoria,CATEGORIAS);popularSelect(els.contaCategoria,CATEGORIAS_GASTO);popularSelect(els.filtroCategoria,CATEGORIAS,{valor:"todas",texto:"Todas"});popularSelect(els.editMovCategoria,CATEGORIAS);popularSelect(els.editContaCategoria,CATEGORIAS_GASTO);els.categoria.value="Outros";els.contaCategoria.value="Casa";
+
+    function normalizarEstado(dados){
+      if(!dados||!Array.isArray(dados.movimentos)||!Array.isArray(dados.contas))throw Error("Dados inválidos");
+      if(dados.movimentos.length+dados.contas.length>20000)throw Error("Dados demais");
+      if(!dados.movimentos.every(m=>m&&textoValido(m.descricao)&&centavosValidos(m.centavos)&&["entrada","gasto"].includes(m.tipo)&&dataValida(m.data)))throw Error("Movimentações inválidas");
+      if(!dados.contas.every(c=>c&&textoValido(c.nome)&&centavosValidos(c.centavos)&&dataValida(c.vencimento)))throw Error("Contas inválidas");
+      return {movimentos:dados.movimentos.map(m=>({id:m.id||uuid(),descricao:m.descricao.trim(),centavos:m.centavos,tipo:m.tipo,categoria:CATEGORIAS.includes(m.categoria)?m.categoria:"Outros",data:m.data})),contas:dados.contas.map(c=>({id:c.id||uuid(),nome:c.nome.trim(),centavos:c.centavos,categoria:CATEGORIAS_GASTO.includes(c.categoria)?c.categoria:"Outros",vencimento:c.vencimento}))};
+    }
+    function lerLocal(){try{const atual=localStorage.getItem(LOCAL_KEY);if(atual)return normalizarEstado(JSON.parse(atual));return normalizarEstado({movimentos:JSON.parse(localStorage.getItem(LEGACY_MOVIMENTOS)||"[]"),contas:JSON.parse(localStorage.getItem(LEGACY_CONTAS)||"[]")})}catch{return{movimentos:[],contas:[]}}}
+    function localTemDados(){const l=lerLocal();return l.movimentos.length+l.contas.length>0}
+
+    async function carregarNuvem(){
+      if(!session)return;
+      setSync("● Sincronizando…","syncing");
+      const [mr,br]=await Promise.all([
+        sb.from("movements").select("id,description,amount_cents,type,category,movement_date").order("movement_date",{ascending:false}),
+        sb.from("bills").select("id,name,amount_cents,category,due_date").order("due_date",{ascending:true})
+      ]);
+      if(mr.error||br.error){console.error(mr.error||br.error);setSync("● Erro de sincronização","error");throw(mr.error||br.error)}
+      estado={movimentos:(mr.data||[]).map(m=>({id:m.id,descricao:m.description,centavos:Number(m.amount_cents),tipo:m.type,categoria:m.category||"Outros",data:m.movement_date})),contas:(br.data||[]).map(c=>({id:c.id,nome:c.name,centavos:Number(c.amount_cents),categoria:c.category||"Outros",vencimento:c.due_date}))};
+      renderTudo();setSync("● Nuvem sincronizada");
+      els.importLocalCard.hidden=!(localTemDados()&&estado.movimentos.length===0&&estado.contas.length===0);
+    }
+    async function inserirMovimento(m){setSync("● Salvando…","syncing");const {error}=await sb.from("movements").insert({id:m.id,user_id:session.user.id,description:m.descricao,amount_cents:m.centavos,type:m.tipo,category:m.categoria,movement_date:m.data});if(error)throw error;await carregarNuvem()}
+    async function inserirConta(c){setSync("● Salvando…","syncing");const {error}=await sb.from("bills").insert({id:c.id,user_id:session.user.id,name:c.nome,amount_cents:c.centavos,category:c.categoria,due_date:c.vencimento});if(error)throw error;await carregarNuvem()}
+    async function atualizarMovimento(m){setSync("● Salvando…","syncing");const {error}=await sb.from("movements").update({description:m.descricao,amount_cents:m.centavos,type:m.tipo,category:m.categoria,movement_date:m.data}).eq("id",m.id);if(error)throw error;await carregarNuvem()}
+    async function atualizarConta(c){setSync("● Salvando…","syncing");const {error}=await sb.from("bills").update({name:c.nome,amount_cents:c.centavos,category:c.categoria,due_date:c.vencimento}).eq("id",c.id);if(error)throw error;await carregarNuvem()}
+    async function excluirMovimento(id){setSync("● Salvando…","syncing");const {error}=await sb.from("movements").delete().eq("id",id);if(error)throw error;await carregarNuvem()}
+    async function excluirConta(id){setSync("● Salvando…","syncing");const {error}=await sb.from("bills").delete().eq("id",id);if(error)throw error;await carregarNuvem()}
+
+    function criarBotao(texto,classe,acao){const b=document.createElement("button");b.type="button";b.className=`btn ${classe}`;b.textContent=texto;b.addEventListener("click",acao);return b}
+    function statusConta(c){const h=hoje();if(c.vencimento<h)return{texto:"Vencida",classe:"status-vencida"};if(c.vencimento===h)return{texto:"Vence hoje",classe:"status-hoje"};return{texto:"A vencer",classe:"status-ok"}}
+    function totalSaldo(){return estado.movimentos.reduce((s,m)=>s+(m.tipo==="entrada"?m.centavos:-m.centavos),0)}
+    function totalPendente(){return estado.contas.reduce((s,c)=>s+c.centavos,0)}
+    function renderResumo(){const mes=els.mesAnalise.value||mesAtual();let entradas=0,gastos=0,qtd=0;const porCat={};estado.movimentos.forEach(m=>{if(m.data.slice(0,7)===mes){qtd++;if(m.tipo==="entrada")entradas+=m.centavos;else{gastos+=m.centavos;porCat[m.categoria]=(porCat[m.categoria]||0)+m.centavos}}});const saldo=totalSaldo(),pend=totalPendente(),prev=saldo-pend,resultado=entradas-gastos;els.saldo.textContent=moeda(saldo);els.entradas.textContent=moeda(entradas);els.gastos.textContent=moeda(gastos);els.saldoPrevisto.textContent=moeda(prev);els.cardSaldo.classList.remove("saldo-positivo","saldo-negativo","saldo-zero");els.cardSaldo.classList.add(saldo>0?"saldo-positivo":saldo<0?"saldo-negativo":"saldo-zero");els.resultadoMesPill.textContent="Resultado do mês: "+(resultado>=0?"+ ":"− ")+moeda(Math.abs(resultado));els.resultadoMesPill.style.color=resultado>=0?"#23734b":"#992b2b";els.resultadoMesPill.style.background=resultado>=0?"#eef8f2":"#fdeeee";els.qtdMes.textContent=String(qtd);const dias=new Date(+mes.slice(0,4),+mes.slice(5,7),0).getDate();els.mediaGastos.textContent=moeda(Math.round(gastos/dias));renderGraficoCategorias(porCat,gastos)}
+    function renderGraficoCategorias(porCat,total){els.graficoCategorias.replaceChildren();const entradas=Object.entries(porCat).sort((a,b)=>b[1]-a[1]);els.maiorCategoria.textContent=entradas.length?`${entradas[0][0]} • ${moeda(entradas[0][1])}`:"—";if(!entradas.length){const p=document.createElement("p");p.className="empty";p.textContent="Nenhum gasto neste mês.";els.graficoCategorias.append(p);return}entradas.forEach(([cat,val])=>{const row=document.createElement("div");row.className="bar-row";const l=document.createElement("div");l.className="bar-label";l.textContent=cat;const t=document.createElement("div");t.className="bar-track";const f=document.createElement("div");f.className="bar-fill";f.style.width=Math.max(4,Math.round(val/total*100))+"%";t.append(f);const v=document.createElement("div");v.className="bar-value";v.textContent=moeda(val);row.append(l,t,v);els.graficoCategorias.append(row)})}
+    function renderContas(){els.listaContas.replaceChildren();els.totalPendente.textContent="Total pendente: "+moeda(totalPendente());if(!estado.contas.length){const p=document.createElement("p");p.className="empty";p.textContent="Nenhuma conta pendente. Ótimo sinal.";els.listaContas.append(p);return}estado.contas.slice().sort((a,b)=>a.vencimento.localeCompare(b.vencimento)).forEach(c=>{const linha=document.createElement("div");linha.className="row-item";const principal=document.createElement("div");principal.className="row-main";const titulo=document.createElement("p");titulo.className="row-title";titulo.textContent=c.nome;const meta=document.createElement("p");meta.className="row-meta";meta.append(document.createTextNode("Vencimento: "+c.vencimento.split("-").reverse().join("/")));const st=statusConta(c),badge=document.createElement("span");badge.className=`status ${st.classe}`;badge.textContent=st.texto;meta.append(badge);const cat=document.createElement("span");cat.className="categoria-tag";cat.textContent=c.categoria;meta.append(cat);principal.append(titulo,meta);const valor=document.createElement("div");valor.className="row-value";valor.textContent=moeda(c.centavos);const acoes=document.createElement("div");acoes.className="row-actions";const editar=criarBotao("Editar","btn-ghost",()=>abrirEditarConta(c));const pagar=criarBotao("Marcar como paga","btn-primary",async()=>{if(!confirm(`Registrar o pagamento de "${c.nome}" (${moeda(c.centavos)}) hoje?`))return;try{setSync("● Salvando…","syncing");const {error}=await sb.rpc("pay_bill",{p_bill_id:c.id,p_paid_date:hoje()});if(error)throw error;await carregarNuvem();els.avisoConta.textContent="Conta marcada como paga e registrada nos gastos."}catch(e){console.error(e);setSync("● Erro ao salvar","error");els.avisoConta.textContent="Não foi possível registrar o pagamento."}});const excluir=criarBotao("Excluir","btn-danger",async()=>{if(!confirm(`Excluir a conta "${c.nome}"?`))return;try{await excluirConta(c.id);els.avisoConta.textContent="Conta excluída."}catch(e){console.error(e);setSync("● Erro ao salvar","error")}});acoes.append(editar,pagar,excluir);linha.append(principal,valor,acoes);els.listaContas.append(linha)})}
+    function movimentosFiltrados(){const texto=els.filtroTexto.value.trim().toLowerCase(),tipo=els.filtroTipo.value,cat=els.filtroCategoria.value,mes=els.filtroMes.value;return estado.movimentos.filter(m=>(!texto||m.descricao.toLowerCase().includes(texto))&&(tipo==="todos"||m.tipo===tipo)&&(cat==="todas"||m.categoria===cat)&&(!mes||m.data.slice(0,7)===mes)).slice().sort((a,b)=>b.data.localeCompare(a.data))}
+    function renderMovimentos(){els.listaMovimentos.replaceChildren();const lista=movimentosFiltrados();els.contagemFiltro.textContent=`${lista.length} de ${estado.movimentos.length} lançamento(s)`;if(!lista.length){const p=document.createElement("p");p.className="empty";p.textContent="Nenhuma movimentação encontrada com esses filtros.";els.listaMovimentos.append(p);return}lista.forEach(m=>{const linha=document.createElement("div");linha.className="row-item";const principal=document.createElement("div");principal.className="row-main";const titulo=document.createElement("p");titulo.className="row-title";titulo.textContent=m.descricao;const meta=document.createElement("p");meta.className="row-meta";meta.append(document.createTextNode(m.data.split("-").reverse().join("/")+(m.tipo==="entrada"?" • Entrada":" • Gasto")));const cat=document.createElement("span");cat.className="categoria-tag";cat.textContent=m.categoria;meta.append(cat);principal.append(titulo,meta);const valor=document.createElement("div");valor.className=`row-value ${m.tipo}`;valor.textContent=`${m.tipo==="entrada"?"+":"−"} ${moeda(m.centavos)}`;const acoes=document.createElement("div");acoes.className="row-actions";const editar=criarBotao("Editar","btn-ghost",()=>abrirEditarMov(m));const excluir=criarBotao("Excluir","btn-danger",async()=>{if(!confirm(`Excluir "${m.descricao}" de ${moeda(m.centavos)}?`))return;try{await excluirMovimento(m.id);els.avisoMovimento.textContent="Movimentação excluída."}catch(e){console.error(e);setSync("● Erro ao salvar","error")}});acoes.append(editar,excluir);linha.append(principal,valor,acoes);els.listaMovimentos.append(linha)})}
+    function renderTudo(){renderResumo();renderContas();renderMovimentos()}
+
+    els.formMovimento.addEventListener("submit",async e=>{e.preventDefault();if(!els.formMovimento.reportValidity())return;const m={id:uuid(),descricao:els.descricao.value.trim(),centavos:Math.round(Number(els.valor.value)*100),tipo:els.tipo.value,categoria:els.categoria.value,data:els.dataMovimento.value};if(!m.descricao||!centavosValidos(m.centavos)||!["entrada","gasto"].includes(m.tipo)||!CATEGORIAS.includes(m.categoria)||!dataValida(m.data)){els.avisoMovimento.textContent="Confira os dados da movimentação.";return}try{await inserirMovimento(m);els.formMovimento.reset();els.categoria.value="Outros";els.dataMovimento.value=hoje();els.avisoMovimento.textContent="Movimentação salva!";els.descricao.focus()}catch(e){console.error(e);setSync("● Erro ao salvar","error");els.avisoMovimento.textContent="Não foi possível salvar na nuvem."}});
+    els.formConta.addEventListener("submit",async e=>{e.preventDefault();if(!els.formConta.reportValidity())return;const c={id:uuid(),nome:els.contaDescricao.value.trim(),centavos:Math.round(Number(els.contaValor.value)*100),categoria:els.contaCategoria.value,vencimento:els.contaVencimento.value};if(!c.nome||!centavosValidos(c.centavos)||!CATEGORIAS_GASTO.includes(c.categoria)||!dataValida(c.vencimento)){els.avisoConta.textContent="Confira os dados da conta.";return}try{await inserirConta(c);els.formConta.reset();els.contaCategoria.value="Casa";els.avisoConta.textContent="Conta cadastrada!"}catch(e){console.error(e);setSync("● Erro ao salvar","error");els.avisoConta.textContent="Não foi possível salvar na nuvem."}});
+    function abrirEditarMov(m){editMovId=m.id;els.editMovDescricao.value=m.descricao;els.editMovValor.value=(m.centavos/100).toFixed(2);els.editMovTipo.value=m.tipo;els.editMovCategoria.value=m.categoria;els.editMovData.value=m.data;els.modalMov.showModal()}
+    function abrirEditarConta(c){editContaId=c.id;els.editContaNome.value=c.nome;els.editContaValor.value=(c.centavos/100).toFixed(2);els.editContaCategoria.value=c.categoria;els.editContaVencimento.value=c.vencimento;els.modalConta.showModal()}
+    els.formEditMov.addEventListener("submit",async e=>{e.preventDefault();const m={id:editMovId,descricao:els.editMovDescricao.value.trim(),centavos:Math.round(Number(els.editMovValor.value)*100),tipo:els.editMovTipo.value,categoria:els.editMovCategoria.value,data:els.editMovData.value};if(!m.descricao||!centavosValidos(m.centavos)||!["entrada","gasto"].includes(m.tipo)||!CATEGORIAS.includes(m.categoria)||!dataValida(m.data))return;try{await atualizarMovimento(m);els.modalMov.close();els.avisoMovimento.textContent="Movimentação atualizada."}catch(e){console.error(e);setSync("● Erro ao salvar","error")}});
+    els.formEditConta.addEventListener("submit",async e=>{e.preventDefault();const c={id:editContaId,nome:els.editContaNome.value.trim(),centavos:Math.round(Number(els.editContaValor.value)*100),categoria:els.editContaCategoria.value,vencimento:els.editContaVencimento.value};if(!c.nome||!centavosValidos(c.centavos)||!CATEGORIAS_GASTO.includes(c.categoria)||!dataValida(c.vencimento))return;try{await atualizarConta(c);els.modalConta.close();els.avisoConta.textContent="Conta atualizada."}catch(e){console.error(e);setSync("● Erro ao salvar","error")}});
+    document.querySelectorAll("[data-fechar]").forEach(b=>b.addEventListener("click",()=>$(b.dataset.fechar).close()));
+    [els.filtroTexto,els.filtroTipo,els.filtroCategoria,els.filtroMes].forEach(el=>el.addEventListener(el.tagName==="INPUT"?"input":"change",renderMovimentos));
+    els.limparFiltros.addEventListener("click",()=>{els.filtroTexto.value="";els.filtroTipo.value="todos";els.filtroCategoria.value="todas";els.filtroMes.value="";renderMovimentos()});
+    els.mesAnalise.addEventListener("change",renderResumo);els.mesAtual.addEventListener("click",()=>{els.mesAnalise.value=mesAtual();renderResumo()});
+
+    function validarBackup(b){if(!b||b.aplicativo!=="GranaLeve"||![2,3].includes(b.versao))throw Error("Backup incompatível");return normalizarEstado(b.dados)}
+    els.baixarBackup.addEventListener("click",()=>{try{const conteudo=JSON.stringify({aplicativo:"GranaLeve",versao:3,exportadoEm:new Date().toISOString(),dados:estado},null,2),url=URL.createObjectURL(new Blob([conteudo],{type:"application/json"})),a=document.createElement("a");a.href=url;a.download="GranaLeve-backup-"+new Date().toISOString().replace(/[:.]/g,"-")+".json";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);els.avisoBackup.textContent="Backup gerado."}catch{els.avisoBackup.textContent="Não foi possível gerar o backup."}});
+    async function substituirNuvem(dados){const limpo=normalizarEstado(dados);setSync("● Importando…","syncing");const {error:e1}=await sb.from("movements").delete().eq("user_id",session.user.id);if(e1)throw e1;const {error:e2}=await sb.from("bills").delete().eq("user_id",session.user.id);if(e2)throw e2;if(limpo.movimentos.length){const {error}=await sb.from("movements").insert(limpo.movimentos.map(m=>({id:m.id,user_id:session.user.id,description:m.descricao,amount_cents:m.centavos,type:m.tipo,category:m.categoria,movement_date:m.data})));if(error)throw error}if(limpo.contas.length){const {error}=await sb.from("bills").insert(limpo.contas.map(c=>({id:c.id,user_id:session.user.id,name:c.nome,amount_cents:c.centavos,category:c.categoria,due_date:c.vencimento})));if(error)throw error}await carregarNuvem()}
+    els.restaurarBackup.addEventListener("click",async()=>{const arq=els.arquivoBackup.files[0];if(!arq){els.avisoBackup.textContent="Selecione primeiro um arquivo .json.";return}els.restaurarBackup.disabled=true;try{if(arq.size>5*1024*1024)throw Error();const dados=validarBackup(JSON.parse(await arq.text()));if(!confirm(`Restaurar ${dados.movimentos.length} movimentações e ${dados.contas.length} contas? Os dados atuais da sua conta serão substituídos.`)){els.avisoBackup.textContent="Restauração cancelada.";return}await substituirNuvem(dados);els.arquivoBackup.value="";els.avisoBackup.textContent="Backup restaurado na nuvem."}catch(e){console.error(e);setSync("● Erro ao importar","error");els.avisoBackup.textContent="Arquivo inválido ou não foi possível restaurar."}finally{els.restaurarBackup.disabled=false}});
+    els.exportarCsv.addEventListener("click",()=>{const esc=v=>'"'+String(v).replaceAll('"','""')+'"';const linhas=[["Data","Descrição","Tipo","Categoria","Valor (R$)"],...estado.movimentos.slice().sort((a,b)=>a.data.localeCompare(b.data)).map(m=>[m.data,m.descricao,m.tipo,m.categoria,(m.centavos/100).toFixed(2).replace(".",",")])];const csv="\ufeff"+linhas.map(l=>l.map(esc).join(";")).join("\r\n"),url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download="GranaLeve-movimentacoes.csv";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);els.avisoBackup.textContent="Planilha CSV exportada."});
+    els.importarLocal.addEventListener("click",async()=>{const dados=lerLocal();if(!dados.movimentos.length&&!dados.contas.length){els.avisoBackup.textContent="Não encontrei dados antigos neste navegador.";return}if(!confirm(`Importar ${dados.movimentos.length} movimentações e ${dados.contas.length} contas antigas para a nuvem?`))return;try{await substituirNuvem(dados);els.importLocalCard.hidden=true;els.avisoBackup.textContent="Dados antigos importados para sua conta."}catch(e){console.error(e);setSync("● Erro ao importar","error");els.avisoBackup.textContent="Não foi possível importar os dados antigos."}});
+
+    function setAuthMode(mode){authMode=mode;els.tabLogin.classList.toggle("active",mode==="login");els.tabCadastro.classList.toggle("active",mode==="cadastro");els.authSubmit.textContent=mode==="login"?"Entrar":"Criar conta";els.authSenha.autocomplete=mode==="login"?"current-password":"new-password";setAuthMessage("")}
+    els.tabLogin.addEventListener("click",()=>setAuthMode("login"));els.tabCadastro.addEventListener("click",()=>setAuthMode("cadastro"));
+    els.formAuth.addEventListener("submit",async e=>{e.preventDefault();if(!els.formAuth.reportValidity())return;els.authSubmit.disabled=true;setAuthMessage(authMode==="login"?"Entrando…":"Criando sua conta…");try{if(authMode==="login"){const {error}=await sb.auth.signInWithPassword({email:els.authEmail.value.trim(),password:els.authSenha.value});if(error)throw error}else{const {data,error}=await sb.auth.signUp({email:els.authEmail.value.trim(),password:els.authSenha.value});if(error)throw error;if(!data.session){setAuthMessage("Conta criada. Confira seu e-mail para confirmar o cadastro. Depois volte aqui e entre com sua senha.","ok");return}}}catch(err){console.error(err);const msg=String(err?.message||"");setAuthMessage(msg.includes("Invalid login")?"E-mail ou senha incorretos.":msg.includes("already registered")?"Este e-mail já está cadastrado.":"Não foi possível concluir. Confira os dados e tente novamente.","error")}finally{els.authSubmit.disabled=false}});
+    els.btnSair.addEventListener("click",async()=>{await sb.auth.signOut()});
+    async function aplicarSessao(s){session=s;if(session){els.authShell.hidden=true;els.appMain.hidden=false;els.cloudUser.hidden=false;els.guestBadge.hidden=true;els.cloudEmail.textContent=session.user.email||"Conta conectada";els.dataMovimento.value=hoje();els.mesAnalise.value=mesAtual();try{await carregarNuvem()}catch{}}else{estado={movimentos:[],contas:[]};els.authShell.hidden=false;els.appMain.hidden=true;els.cloudUser.hidden=true;els.guestBadge.hidden=false;setAuthMode("login")}}
+    sb.auth.onAuthStateChange((_event,s)=>{setTimeout(()=>aplicarSessao(s),0)});
+    sb.auth.getSession().then(({data})=>aplicarSessao(data.session));
+  })();
+  </script>
+</body>
+</html>
