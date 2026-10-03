@@ -185,6 +185,9 @@
     .google-mark{width:20px;height:20px;display:grid;place-items:center;border-radius:50%;font-size:17px;font-weight:900;color:#4285f4}
     .auth-divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:#849087;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
     .auth-divider::before,.auth-divider::after{content:"";height:1px;background:#e1e8e4;flex:1}
+    .auth-link{border:0;background:transparent;color:var(--verde-700);padding:5px 0;font-size:13px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
+    .auth-link:hover{color:var(--verde-900)}
+    .auth-security-note{margin:18px 0 0;padding-top:16px;border-top:1px solid #e8efeb;color:var(--texto-2);font-size:12px;line-height:1.55}
     .cloud-user{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
     .cloud-email{font-size:13px;color:#effaf4;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .cloud-logout{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.10);color:white;padding:8px 12px;border-radius:10px;font-weight:800}
@@ -232,9 +235,11 @@
         </div>
         <div class="auth-actions">
           <button class="btn btn-primary" id="auth-submit" type="submit">Entrar</button>
+          <button class="auth-link" id="btn-esqueceu" type="button">Esqueci minha senha</button>
         </div>
         <p class="auth-message" id="auth-message" role="status"></p>
       </form>
+      <p class="auth-security-note">🔒 Seus lançamentos são privados por conta. O GranaLeve não pede senha bancária nem acesso à sua conta do banco.</p>
     </div>
   </section>
 
@@ -377,7 +382,7 @@
       <p id="aviso-backup" class="helper" role="status"></p>
     </section>
 
-    <footer>GranaLeve • Dados sincronizados com segurança na nuvem.</footer>
+    <footer>GranaLeve • Dados sincronizados na nuvem • Você mantém controle sobre seus lançamentos.</footer>
   </main>
 
   <dialog id="modal-movimento">
@@ -407,6 +412,18 @@
     </form>
   </dialog>
 
+  <dialog id="modal-reset">
+    <form class="modal" id="form-reset-senha">
+      <h3>Criar nova senha</h3><p>Digite sua nova senha para concluir a recuperação da conta.</p>
+      <div class="modal-grid">
+        <div class="full"><label for="nova-senha">Nova senha</label><input id="nova-senha" type="password" minlength="6" autocomplete="new-password" required></div>
+        <div class="full"><label for="confirma-senha">Confirmar nova senha</label><input id="confirma-senha" type="password" minlength="6" autocomplete="new-password" required></div>
+      </div>
+      <p id="aviso-reset" class="helper" role="status"></p>
+      <div class="modal-actions"><button class="btn btn-primary" type="submit">Salvar nova senha</button></div>
+    </form>
+  </dialog>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
   (()=>{
@@ -419,7 +436,7 @@
     const CATEGORIAS_GASTO=CATEGORIAS.filter(c=>c!=="Salário");
     const $=id=>document.getElementById(id);
     const els={
-      authShell:$("auth-shell"),appMain:$("app-main"),formAuth:$("form-auth"),authEmail:$("auth-email"),authSenha:$("auth-senha"),authSubmit:$("auth-submit"),authMessage:$("auth-message"),btnGoogle:$("btn-google"),tabLogin:$("tab-login"),tabCadastro:$("tab-cadastro"),cloudUser:$("cloud-user"),cloudEmail:$("cloud-email"),guestBadge:$("guest-badge"),btnSair:$("btn-sair"),syncStatus:$("sync-status"),importLocalCard:$("import-local-card"),importarLocal:$("importar-local"),
+      authShell:$("auth-shell"),appMain:$("app-main"),formAuth:$("form-auth"),authEmail:$("auth-email"),authSenha:$("auth-senha"),authSubmit:$("auth-submit"),authMessage:$("auth-message"),btnGoogle:$("btn-google"),btnEsqueceu:$("btn-esqueceu"),tabLogin:$("tab-login"),tabCadastro:$("tab-cadastro"),cloudUser:$("cloud-user"),cloudEmail:$("cloud-email"),guestBadge:$("guest-badge"),btnSair:$("btn-sair"),syncStatus:$("sync-status"),importLocalCard:$("import-local-card"),importarLocal:$("importar-local"),
       saldo:$("total-saldo"),entradas:$("total-entradas"),gastos:$("total-gastos"),saldoPrevisto:$("saldo-previsto"),cardSaldo:document.querySelector(".card.saldo"),
       totalPendente:$("total-pendente"),mesAnalise:$("mes-analise"),mesAtual:$("mes-atual"),resultadoMesPill:$("resultado-mes-pill"),graficoCategorias:$("grafico-categorias"),maiorCategoria:$("maior-categoria"),qtdMes:$("qtd-movimentos-mes"),mediaGastos:$("media-gastos"),
       formMovimento:$("form-movimento"),descricao:$("descricao"),valor:$("valor"),tipo:$("tipo"),categoria:$("categoria"),dataMovimento:$("data-movimento"),avisoMovimento:$("aviso-movimento"),listaMovimentos:$("lista-movimentos"),
@@ -427,7 +444,8 @@
       filtroTexto:$("filtro-texto"),filtroTipo:$("filtro-tipo"),filtroCategoria:$("filtro-categoria"),filtroMes:$("filtro-mes"),limparFiltros:$("limpar-filtros"),contagemFiltro:$("contagem-filtro"),
       baixarBackup:$("baixar-backup"),restaurarBackup:$("restaurar-backup"),arquivoBackup:$("arquivo-backup"),exportarCsv:$("exportar-csv"),avisoBackup:$("aviso-backup"),
       modalMov:$("modal-movimento"),formEditMov:$("form-editar-movimento"),editMovDescricao:$("edit-mov-descricao"),editMovValor:$("edit-mov-valor"),editMovTipo:$("edit-mov-tipo"),editMovCategoria:$("edit-mov-categoria"),editMovData:$("edit-mov-data"),
-      modalConta:$("modal-conta"),formEditConta:$("form-editar-conta"),editContaNome:$("edit-conta-nome"),editContaValor:$("edit-conta-valor"),editContaCategoria:$("edit-conta-categoria"),editContaVencimento:$("edit-conta-vencimento")
+      modalConta:$("modal-conta"),formEditConta:$("form-editar-conta"),editContaNome:$("edit-conta-nome"),editContaValor:$("edit-conta-valor"),editContaCategoria:$("edit-conta-categoria"),editContaVencimento:$("edit-conta-vencimento"),
+      modalReset:$("modal-reset"),formResetSenha:$("form-reset-senha"),novaSenha:$("nova-senha"),confirmaSenha:$("confirma-senha"),avisoReset:$("aviso-reset")
     };
     let authMode="login",session=null,estado={movimentos:[],contas:[]},editMovId=null,editContaId=null;
     const moeda=c=>(c/100).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
@@ -500,7 +518,7 @@
     els.exportarCsv.addEventListener("click",()=>{const esc=v=>'"'+String(v).replaceAll('"','""')+'"';const linhas=[["Data","Descrição","Tipo","Categoria","Valor (R$)"],...estado.movimentos.slice().sort((a,b)=>a.data.localeCompare(b.data)).map(m=>[m.data,m.descricao,m.tipo,m.categoria,(m.centavos/100).toFixed(2).replace(".",",")])];const csv="\ufeff"+linhas.map(l=>l.map(esc).join(";")).join("\r\n"),url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download="GranaLeve-movimentacoes.csv";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);els.avisoBackup.textContent="Planilha CSV exportada."});
     els.importarLocal.addEventListener("click",async()=>{const dados=lerLocal();if(!dados.movimentos.length&&!dados.contas.length){els.avisoBackup.textContent="Não encontrei dados antigos neste navegador.";return}if(!confirm(`Importar ${dados.movimentos.length} movimentações e ${dados.contas.length} contas antigas para a nuvem?`))return;try{await substituirNuvem(dados);els.importLocalCard.hidden=true;els.avisoBackup.textContent="Dados antigos importados para sua conta."}catch(e){console.error(e);setSync("● Erro ao importar","error");els.avisoBackup.textContent="Não foi possível importar os dados antigos."}});
 
-    function setAuthMode(mode){authMode=mode;els.tabLogin.classList.toggle("active",mode==="login");els.tabCadastro.classList.toggle("active",mode==="cadastro");els.authSubmit.textContent=mode==="login"?"Entrar":"Criar conta";els.authSenha.autocomplete=mode==="login"?"current-password":"new-password";setAuthMessage("")}
+    function setAuthMode(mode){authMode=mode;els.tabLogin.classList.toggle("active",mode==="login");els.tabCadastro.classList.toggle("active",mode==="cadastro");els.authSubmit.textContent=mode==="login"?"Entrar":"Criar conta";els.authSenha.autocomplete=mode==="login"?"current-password":"new-password";els.btnEsqueceu.hidden=mode!=="login";setAuthMessage("")}
     els.tabLogin.addEventListener("click",()=>setAuthMode("login"));els.tabCadastro.addEventListener("click",()=>setAuthMode("cadastro"));
     els.btnGoogle.addEventListener("click",async()=>{
       els.btnGoogle.disabled=true;
@@ -514,10 +532,67 @@
         els.btnGoogle.disabled=false;
       }
     });
-    els.formAuth.addEventListener("submit",async e=>{e.preventDefault();if(!els.formAuth.reportValidity())return;els.authSubmit.disabled=true;setAuthMessage(authMode==="login"?"Entrando…":"Criando sua conta…");try{if(authMode==="login"){const {error}=await sb.auth.signInWithPassword({email:els.authEmail.value.trim(),password:els.authSenha.value});if(error)throw error}else{const {data,error}=await sb.auth.signUp({email:els.authEmail.value.trim(),password:els.authSenha.value});if(error)throw error;if(!data.session){setAuthMessage("Conta criada. Confira seu e-mail para confirmar o cadastro. Depois volte aqui e entre com sua senha.","ok");return}}}catch(err){console.error(err);const msg=String(err?.message||"");setAuthMessage(msg.includes("Invalid login")?"E-mail ou senha incorretos.":msg.includes("already registered")?"Este e-mail já está cadastrado.":"Não foi possível concluir. Confira os dados e tente novamente.","error")}finally{els.authSubmit.disabled=false}});
+    els.btnEsqueceu.addEventListener("click",async()=>{
+      const email=els.authEmail.value.trim();
+      if(!email){setAuthMessage("Digite seu e-mail acima para receber o link de recuperação.","error");els.authEmail.focus();return}
+      if(!els.authEmail.checkValidity()){setAuthMessage("Digite um e-mail válido.","error");els.authEmail.focus();return}
+      els.btnEsqueceu.disabled=true;
+      setAuthMessage("Enviando link de recuperação…");
+      try{
+        const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:"https://granaleve.onrender.com"});
+        if(error)throw error;
+        setAuthMessage("Se este e-mail estiver cadastrado, você receberá um link para criar uma nova senha.","ok");
+      }catch(err){
+        console.error(err);
+        const msg=String(err?.message||"").toLowerCase();
+        setAuthMessage(msg.includes("rate limit")?"Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.":"Não foi possível enviar agora. Tente novamente em alguns minutos.","error");
+      }finally{els.btnEsqueceu.disabled=false}
+    });
+    els.formResetSenha.addEventListener("submit",async e=>{
+      e.preventDefault();
+      els.avisoReset.textContent="";
+      const senha=els.novaSenha.value,confirmacao=els.confirmaSenha.value;
+      if(senha.length<6){els.avisoReset.textContent="A senha precisa ter pelo menos 6 caracteres.";return}
+      if(senha!==confirmacao){els.avisoReset.textContent="As duas senhas precisam ser iguais.";return}
+      const botao=els.formResetSenha.querySelector('button[type="submit"]');
+      botao.disabled=true;els.avisoReset.textContent="Salvando…";
+      try{
+        const {error}=await sb.auth.updateUser({password:senha});
+        if(error)throw error;
+        els.avisoReset.textContent="Senha atualizada com sucesso.";
+        els.formResetSenha.reset();
+        setTimeout(()=>els.modalReset.close(),800);
+      }catch(err){console.error(err);els.avisoReset.textContent="Não foi possível atualizar a senha. Solicite um novo link de recuperação."}finally{botao.disabled=false}
+    });
+    els.formAuth.addEventListener("submit",async e=>{
+      e.preventDefault();
+      if(!els.formAuth.reportValidity())return;
+      els.authSubmit.disabled=true;
+      setAuthMessage(authMode==="login"?"Entrando…":"Criando sua conta…");
+      try{
+        if(authMode==="login"){
+          const {error}=await sb.auth.signInWithPassword({email:els.authEmail.value.trim(),password:els.authSenha.value});
+          if(error)throw error;
+        }else{
+          const {data,error}=await sb.auth.signUp({email:els.authEmail.value.trim(),password:els.authSenha.value,options:{emailRedirectTo:"https://granaleve.onrender.com"}});
+          if(error)throw error;
+          if(!data.session){setAuthMessage("Conta criada. Confira seu e-mail para confirmar o cadastro. Depois volte aqui e entre com sua senha.","ok");return}
+        }
+      }catch(err){
+        console.error(err);
+        const msg=String(err?.message||"").toLowerCase();
+        const amigavel=msg.includes("invalid login")?"E-mail ou senha incorretos.":msg.includes("email not confirmed")?"Confirme seu e-mail antes de entrar.":msg.includes("already registered")?"Este e-mail já está cadastrado.":msg.includes("rate limit")||msg.includes("too many")?"Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.":msg.includes("password")&&msg.includes("weak")?"Escolha uma senha mais forte.":"Não foi possível concluir. Confira os dados e tente novamente.";
+        setAuthMessage(amigavel,"error");
+      }finally{els.authSubmit.disabled=false}
+    });
     els.btnSair.addEventListener("click",async()=>{await sb.auth.signOut()});
-    async function aplicarSessao(s){session=s;if(session){els.authShell.hidden=true;els.appMain.hidden=false;els.cloudUser.hidden=false;els.guestBadge.hidden=true;els.cloudEmail.textContent=session.user.email||"Conta conectada";els.dataMovimento.value=hoje();els.mesAnalise.value=mesAtual();try{await carregarNuvem()}catch{}}else{estado={movimentos:[],contas:[]};els.authShell.hidden=false;els.appMain.hidden=true;els.cloudUser.hidden=true;els.guestBadge.hidden=false;setAuthMode("login")}}
-    sb.auth.onAuthStateChange((_event,s)=>{setTimeout(()=>aplicarSessao(s),0)});
+    async function aplicarSessao(s){session=s;if(session){els.authShell.hidden=true;els.appMain.hidden=false;els.cloudUser.hidden=false;els.guestBadge.hidden=true;els.cloudEmail.textContent=session.user.email||"Conta conectada";els.dataMovimento.value=hoje();els.mesAnalise.value=mesAtual();try{await carregarNuvem()}catch{}}else{estado={movimentos:[],contas:[]};els.authShell.hidden=false;els.appMain.hidden=true;els.cloudUser.hidden=true;els.guestBadge.hidden=false;els.btnGoogle.disabled=false;setAuthMode("login")}}
+    sb.auth.onAuthStateChange((event,s)=>{
+      setTimeout(async()=>{
+        await aplicarSessao(s);
+        if(event==="PASSWORD_RECOVERY"){els.avisoReset.textContent="";els.modalReset.showModal();els.novaSenha.focus()}
+      },0);
+    });
     sb.auth.getSession().then(({data})=>aplicarSessao(data.session));
   })();
   </script>
