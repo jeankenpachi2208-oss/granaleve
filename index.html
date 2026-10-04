@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#164b37">
+  <meta name="description" content="GranaLeve é um controle financeiro pessoal simples para registrar entradas, gastos e contas a vencer com sincronização na nuvem.">
   <title>GranaLeve — Seu dinheiro organizado</title>
   <style>
     :root {
@@ -188,6 +189,11 @@
     .auth-link{border:0;background:transparent;color:var(--verde-700);padding:5px 0;font-size:13px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
     .auth-link:hover{color:var(--verde-900)}
     .auth-security-note{margin:18px 0 0;padding-top:16px;border-top:1px solid #e8efeb;color:var(--texto-2);font-size:12px;line-height:1.55}
+    .legal-links{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px;font-size:12px}
+    .legal-links a{color:var(--verde-700);font-weight:800;text-underline-offset:3px}
+    .account-zone{margin-top:18px;padding:18px;border:1px solid #f0caca;border-radius:14px;background:#fffafa}
+    .account-zone h4{margin:0 0 6px;font-size:16px;color:#7d2525}
+    .account-zone p{margin:0 0 13px;color:var(--texto-2);font-size:13px;line-height:1.5}
     .cloud-user{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
     .cloud-email{font-size:13px;color:#effaf4;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .cloud-logout{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.10);color:white;padding:8px 12px;border-radius:10px;font-weight:800}
@@ -231,7 +237,7 @@
       <form id="form-auth">
         <div class="auth-fields">
           <div><label for="auth-email">E-mail</label><input id="auth-email" type="email" autocomplete="email" placeholder="voce@email.com" required></div>
-          <div><label for="auth-senha">Senha</label><input id="auth-senha" type="password" autocomplete="current-password" minlength="6" placeholder="Mínimo de 6 caracteres" required></div>
+          <div><label for="auth-senha">Senha</label><input id="auth-senha" type="password" autocomplete="current-password" minlength="8" placeholder="Mínimo de 8 caracteres" required></div>
         </div>
         <div class="auth-actions">
           <button class="btn btn-primary" id="auth-submit" type="submit">Entrar</button>
@@ -240,6 +246,7 @@
         <p class="auth-message" id="auth-message" role="status"></p>
       </form>
       <p class="auth-security-note">🔒 Seus lançamentos são privados por conta. O GranaLeve não pede senha bancária nem acesso à sua conta do banco.</p>
+      <div class="legal-links"><span>Ao usar o GranaLeve, você concorda com</span><a href="terms.html" target="_blank" rel="noopener">Termos de Uso</a><span>e</span><a href="privacy.html" target="_blank" rel="noopener">Política de Privacidade</a>.</div>
     </div>
   </section>
 
@@ -380,6 +387,16 @@
         <div class="backup-card" id="import-local-card" hidden><h4>Migrar dados antigos</h4><p>Leva os dados que estavam salvos neste navegador para sua conta na nuvem.</p><button class="btn btn-secondary" type="button" id="importar-local">Importar dados deste navegador</button></div>
       </div>
       <p id="aviso-backup" class="helper" role="status"></p>
+      <div class="account-zone">
+        <h4>Conta e privacidade</h4>
+        <p>Você pode baixar seus dados acima e também excluir permanentemente sua conta. A exclusão remove suas movimentações, contas pendentes e acesso ao GranaLeve.</p>
+        <div class="form-actions" style="margin-top:0">
+          <a class="btn btn-ghost" href="privacy.html" target="_blank" rel="noopener" style="text-decoration:none">Política de Privacidade</a>
+          <a class="btn btn-ghost" href="terms.html" target="_blank" rel="noopener" style="text-decoration:none">Termos de Uso</a>
+          <button class="btn btn-danger" type="button" id="excluir-minha-conta">Excluir minha conta</button>
+        </div>
+        <p id="aviso-conta-usuario" class="helper" role="status"></p>
+      </div>
     </section>
 
     <footer>GranaLeve • Dados sincronizados na nuvem • Você mantém controle sobre seus lançamentos.</footer>
@@ -416,8 +433,8 @@
     <form class="modal" id="form-reset-senha">
       <h3>Criar nova senha</h3><p>Digite sua nova senha para concluir a recuperação da conta.</p>
       <div class="modal-grid">
-        <div class="full"><label for="nova-senha">Nova senha</label><input id="nova-senha" type="password" minlength="6" autocomplete="new-password" required></div>
-        <div class="full"><label for="confirma-senha">Confirmar nova senha</label><input id="confirma-senha" type="password" minlength="6" autocomplete="new-password" required></div>
+        <div class="full"><label for="nova-senha">Nova senha</label><input id="nova-senha" type="password" minlength="8" autocomplete="new-password" required></div>
+        <div class="full"><label for="confirma-senha">Confirmar nova senha</label><input id="confirma-senha" type="password" minlength="8" autocomplete="new-password" required></div>
       </div>
       <p id="aviso-reset" class="helper" role="status"></p>
       <div class="modal-actions"><button class="btn btn-primary" type="submit">Salvar nova senha</button></div>
@@ -442,7 +459,7 @@
       formMovimento:$("form-movimento"),descricao:$("descricao"),valor:$("valor"),tipo:$("tipo"),categoria:$("categoria"),dataMovimento:$("data-movimento"),avisoMovimento:$("aviso-movimento"),listaMovimentos:$("lista-movimentos"),
       formConta:$("form-conta"),contaDescricao:$("conta-descricao"),contaValor:$("conta-valor"),contaCategoria:$("conta-categoria"),contaVencimento:$("conta-vencimento"),avisoConta:$("aviso-conta"),listaContas:$("lista-contas"),
       filtroTexto:$("filtro-texto"),filtroTipo:$("filtro-tipo"),filtroCategoria:$("filtro-categoria"),filtroMes:$("filtro-mes"),limparFiltros:$("limpar-filtros"),contagemFiltro:$("contagem-filtro"),
-      baixarBackup:$("baixar-backup"),restaurarBackup:$("restaurar-backup"),arquivoBackup:$("arquivo-backup"),exportarCsv:$("exportar-csv"),avisoBackup:$("aviso-backup"),
+      baixarBackup:$("baixar-backup"),restaurarBackup:$("restaurar-backup"),arquivoBackup:$("arquivo-backup"),exportarCsv:$("exportar-csv"),avisoBackup:$("aviso-backup"),excluirMinhaConta:$("excluir-minha-conta"),avisoContaUsuario:$("aviso-conta-usuario"),
       modalMov:$("modal-movimento"),formEditMov:$("form-editar-movimento"),editMovDescricao:$("edit-mov-descricao"),editMovValor:$("edit-mov-valor"),editMovTipo:$("edit-mov-tipo"),editMovCategoria:$("edit-mov-categoria"),editMovData:$("edit-mov-data"),
       modalConta:$("modal-conta"),formEditConta:$("form-editar-conta"),editContaNome:$("edit-conta-nome"),editContaValor:$("edit-conta-valor"),editContaCategoria:$("edit-conta-categoria"),editContaVencimento:$("edit-conta-vencimento"),
       modalReset:$("modal-reset"),formResetSenha:$("form-reset-senha"),novaSenha:$("nova-senha"),confirmaSenha:$("confirma-senha"),avisoReset:$("aviso-reset")
@@ -518,7 +535,29 @@
     els.exportarCsv.addEventListener("click",()=>{const esc=v=>'"'+String(v).replaceAll('"','""')+'"';const linhas=[["Data","Descrição","Tipo","Categoria","Valor (R$)"],...estado.movimentos.slice().sort((a,b)=>a.data.localeCompare(b.data)).map(m=>[m.data,m.descricao,m.tipo,m.categoria,(m.centavos/100).toFixed(2).replace(".",",")])];const csv="\ufeff"+linhas.map(l=>l.map(esc).join(";")).join("\r\n"),url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"})),a=document.createElement("a");a.href=url;a.download="GranaLeve-movimentacoes.csv";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);els.avisoBackup.textContent="Planilha CSV exportada."});
     els.importarLocal.addEventListener("click",async()=>{const dados=lerLocal();if(!dados.movimentos.length&&!dados.contas.length){els.avisoBackup.textContent="Não encontrei dados antigos neste navegador.";return}if(!confirm(`Importar ${dados.movimentos.length} movimentações e ${dados.contas.length} contas antigas para a nuvem?`))return;try{await substituirNuvem(dados);els.importLocalCard.hidden=true;els.avisoBackup.textContent="Dados antigos importados para sua conta."}catch(e){console.error(e);setSync("● Erro ao importar","error");els.avisoBackup.textContent="Não foi possível importar os dados antigos."}});
 
-    function setAuthMode(mode){authMode=mode;els.tabLogin.classList.toggle("active",mode==="login");els.tabCadastro.classList.toggle("active",mode==="cadastro");els.authSubmit.textContent=mode==="login"?"Entrar":"Criar conta";els.authSenha.autocomplete=mode==="login"?"current-password":"new-password";els.btnEsqueceu.hidden=mode!=="login";setAuthMessage("")}
+    els.excluirMinhaConta.addEventListener("click",async()=>{
+      const confirmacao=prompt("Esta ação é permanente. Para excluir sua conta e todos os dados, digite EXCLUIR.");
+      if(confirmacao!=="EXCLUIR"){els.avisoContaUsuario.textContent=confirmacao===null?"Exclusão cancelada.":"Confirmação incorreta. A conta não foi excluída.";return}
+      els.excluirMinhaConta.disabled=true;
+      els.avisoContaUsuario.textContent="Excluindo conta e dados…";
+      setSync("● Excluindo conta…","syncing");
+      try{
+        const {error}=await sb.functions.invoke("delete-account",{body:{}});
+        if(error)throw error;
+        [LOCAL_KEY,LEGACY_MOVIMENTOS,LEGACY_CONTAS].forEach(k=>localStorage.removeItem(k));
+        try{await sb.auth.signOut({scope:"local"})}catch{}
+        alert("Sua conta e seus dados foram excluídos do GranaLeve.");
+        location.replace("https://granaleve.onrender.com");
+      }catch(err){
+        console.error(err);
+        setSync("● Erro ao excluir","error");
+        els.avisoContaUsuario.textContent="Não foi possível excluir a conta agora. Tente novamente.";
+        els.excluirMinhaConta.disabled=false;
+      }
+    });
+
+
+    function setAuthMode(mode){authMode=mode;els.tabLogin.classList.toggle("active",mode==="login");els.tabCadastro.classList.toggle("active",mode==="cadastro");els.authSubmit.textContent=mode==="login"?"Entrar":"Criar conta";els.authSenha.autocomplete=mode==="login"?"current-password":"new-password";els.authSenha.minLength=mode==="login"?6:8;els.authSenha.placeholder=mode==="login"?"Sua senha":"Mínimo de 8 caracteres";els.btnEsqueceu.hidden=mode!=="login";setAuthMessage("")}
     els.tabLogin.addEventListener("click",()=>setAuthMode("login"));els.tabCadastro.addEventListener("click",()=>setAuthMode("cadastro"));
     els.btnGoogle.addEventListener("click",async()=>{
       els.btnGoogle.disabled=true;
@@ -552,7 +591,7 @@
       e.preventDefault();
       els.avisoReset.textContent="";
       const senha=els.novaSenha.value,confirmacao=els.confirmaSenha.value;
-      if(senha.length<6){els.avisoReset.textContent="A senha precisa ter pelo menos 6 caracteres.";return}
+      if(senha.length<8){els.avisoReset.textContent="A senha precisa ter pelo menos 8 caracteres.";return}
       if(senha!==confirmacao){els.avisoReset.textContent="As duas senhas precisam ser iguais.";return}
       const botao=els.formResetSenha.querySelector('button[type="submit"]');
       botao.disabled=true;els.avisoReset.textContent="Salvando…";
